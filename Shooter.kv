@@ -26,3 +26,36 @@
             font_size: '60sp'
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             on_press: root.manager.current = 'game'
+
+<Ship@Image>:
+    source: ''
+    size_hint: (None, None)
+    size: dp(100), dp(250)
+
+<GameScreen>:
+    FloatLayout:
+        FloatLayout:
+            id: game
+            FloatLayout:
+                id: back
+            FloatLayout:
+                id: front
+                Ship:
+                    id: ship
+                    center: root.center
+        FloatLayout:
+            id: interface
+            MDBoxLayout:
+                spacing: dp(20)
+                padding: dp(20)
+                MDFloatingActionButton:
+                    icon: 'arrow-left-bold'
+                    on_press: root.pressKey('left')
+                    on_release: root.releaseKey('left')
+
+                MDFloatingActionButton:
+                    icon: 'arrow-right-bold'
+                    on_press: root.pressKey('right')
+                    on_release: root.releaseKey('right')
+                Widget:
+                    
