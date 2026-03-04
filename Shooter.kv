@@ -58,4 +58,19 @@
                     on_press: root.pressKey('right')
                     on_release: root.releaseKey('right')
                 Widget:
+                
+                MDFloatingActionButton:
+                    icon: 'arrow-up-bold'
+                    on_press: root.pressKey('shot')
+                    on_release: root.releaseKey('shot')
+            MDIconButton:
+                icon: 'pause'
+                pos_hint: {"top":1, "right": 1}
+                icon_size: '50dp'
+                on_press: root.make_pause()
+
+<Shot>:
+    size_hint: None, None
+    size: 20, 20
+    md_bg_color: app.theme_cls.primary_color
                     
