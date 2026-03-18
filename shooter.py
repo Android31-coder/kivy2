@@ -1,4 +1,3 @@
-from kivy.uix.settings import Settings
 from kivymd.uix.bottomsheet.bottomsheet import MDWidget
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
@@ -19,14 +18,13 @@ BULLET_SPEED = dp(10)
 ENEMY_SPEED = dp(3)
 ENEMY_SPAWN_INTERVAL = 1
 
-
 class MainScreen(MDScreen):
     pass
 
 class GameScreen(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        Clock.schedule_interval(self.update, 1/FPS)
+        #Clock.schedule_interval(self.update, 1/FPS)
         self.eventkeys = {}
         self.bullets = []
         self.paused = False
@@ -39,6 +37,17 @@ class GameScreen(MDScreen):
         app = MDApp.get_running_app()
         self.ids.ship.source = app.current_skin
         self.update_ui()
+        if not hasattr(self, "clock_event"):
+            self.clock_event = Clock.schedule_interval(self.update, 1/FPS)
+        self.paused = False
+        self.restart_game()
+
+    def on_pre_leave(self):
+        if hasattr(self, "clock_event"):
+            self.clock_event.cencel()
+            del self.clock_event
+        self.paused = True
+
     def update_ui(self):
         self.ids.lives_label.text = " ❤ " * self.lives
         self.ids.score_label.text = f"Збито: {self.score}"
@@ -86,6 +95,11 @@ class GameScreen(MDScreen):
                     self.eventkeys[key] = False
         for bullet in self.bullets:
             bullet.pos[1] += BULLET_SPEED
+
+        for bullet in self.bullets[:]:
+            if bullet.pos[1] > self.height:
+                self.bullets.remove(bullet)
+                self.ids.front.remove_widget(bullet)
         
         self.spawn_timer += dt
         if self.spawn_timer >= ENEMY_SPAWN_INTERVAL:
@@ -101,15 +115,22 @@ class GameScreen(MDScreen):
                     self.ids.front.remove_widget(enemy)
                     self.bullets.remove(bullet)
                     self.ids.front.remove_widget(bullet)
+                    self.score += 1
+                    self.update_ui()
                     break
             
             if enemy.pos[1] < 0:
                 self.enemies.remove(enemy)
                 self.ids.front.remove_widget(enemy)
             
-            # if enemy.collide_widget(self.ids.ship):
-            #     self.manager.current = "main"
-            #     break
+            if enemy.colide_widget(self.ids.ship):
+                damage = getattr(enemy, "damage", 1)
+                self.lives -= damage
+                self.update_ui()
+                self.enemies.remove(enemy)
+                self.ids.front.remove_widget(enemy)
+                if self.lives <= 0:
+                    self.game_over()
 
 class SettingsScreen(MDScreen):
     pass
@@ -121,10 +142,16 @@ class SettingsScreen(MDScreen):
         self.eventkeys[key] = False
     
     def moveLeft(self):
-        self.ids.ship.pos[0] -= SHIP_SPEED
+        new_x = self.ids.ship.pos[0] - SHIP_SPEED
+        if new_x <0:
+            new_x = 0   
+        self.ids.ship.pos[0] = new_x
     
     def moveRight(self):
-        self.ids.ship.pos[0] += SHIP_SPEED
+        new_x = self.ids.ship.pos[0] + SHIP_SPEED
+        if new_x + self.ids.ship.width > self.width:
+            new_x = self.width - self.ids.ship.width
+        self.ids.ship.pos[0] = new_x 
     
     def shot(self):
         shot = Shot(pos = (self.ids.ship.center_x, self.ids.ship.top))
@@ -134,6 +161,18 @@ class SettingsScreen(MDScreen):
     def spawn_enemy(self):
         x = randint(0, int(self.width - dp(50)))
         enemy = Enemy(pos = (x, self.height))
+
+        r = randint(1, 100)
+        if r <= 70:
+            enemy.source = "assets/images/enemy.png"
+            enemy.damage = 1
+        elif r <= 90:
+            enemy.source = "assets/images/enemy.png"
+            enemy.damage = 2
+        else:
+            enemy.source = "assets/images/enemy.png"
+            enemy.damage = -1
+
         self.enemies.append(enemy)
         self.ids.front.add_widget(enemy)
     
