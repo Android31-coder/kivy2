@@ -1,10 +1,12 @@
 #:kivy 2.3.1
 
 <MainScreen>:
+    FitImage:
+        source: "assets/images/back1.jpg"
     MDBoxLayout:
         orientation: 'vertical'
-        padding: '50pd'
-        spacing: '30sp'
+        padding: '50dp'
+        spacing: '30dp'
 
         MDIconButton:
             icon: 'cog'
@@ -12,23 +14,22 @@
             icon_size: '50dp'
 
         MDLabel:
-            text: 'SHOOTER'
+            text: "SHOOTER"
             halign: 'center'
             font_size: '60sp'
 
         Image:
-            source: 'assets/images/bibizyanu.jpg'
+            source: 'assets/images/rocket.png'
             size_hint_y: 0.7
             allow_stretch: True
-
         MDRectangleFlatButton:
             text: 'PLAY'
             font_size: '60sp'
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            on_press: root.manager.current = 'game'
+            on_press: root.manager.current = "game"
 
 <Ship@Image>:
-    source: ''
+    source: 'assets/images/rocket.png'
     size_hint: (None, None)
     size: dp(100), dp(250)
 
@@ -38,6 +39,8 @@
             id: game
             FloatLayout:
                 id: back
+                FitImage:
+                    source: "assets/images/back.jpg"
             FloatLayout:
                 id: front
                 Ship:
@@ -50,27 +53,36 @@
                 padding: dp(20)
                 MDFloatingActionButton:
                     icon: 'arrow-left-bold'
-                    on_press: root.pressKey('left')
-                    on_release: root.releaseKey('left')
-
+                    on_press: root.pressKey("left")
+                    on_release: root.releaseKey("left")
                 MDFloatingActionButton:
                     icon: 'arrow-right-bold'
-                    on_press: root.pressKey('right')
-                    on_release: root.releaseKey('right')
+                    on_press: root.pressKey("right")
+                    on_release: root.releaseKey("right")
                 Widget:
                 
                 MDFloatingActionButton:
                     icon: 'arrow-up-bold'
-                    on_press: root.pressKey('shot')
-                    on_release: root.releaseKey('shot')
+                    on_press: root.pressKey("shot")
+                    on_release: root.releaseKey("shot")
+            
             MDIconButton:
                 icon: 'pause'
-                pos_hint: {"top":1, "right": 1}
+                pos_hint: {"top": 1, "right": 1}
                 icon_size: '50dp'
                 on_press: root.make_pause()
+                
 
 <Shot>:
     size_hint: None, None
     size: 20, 20
     md_bg_color: app.theme_cls.primary_color
                     
+<Enemy@Image>:
+    source: "assets/images/enemy.png"
+    size_hint: None, None
+    size: dp(50), dp(50)
+
+
+        
+
