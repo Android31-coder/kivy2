@@ -76,9 +76,6 @@ class GameScreen(MDScreen):
         self.ids.ship.center_x = self.center_x
         self.update_ui()
 
-
-
-    
     def make_pause(self):
         self.paused = not self.paused
 
