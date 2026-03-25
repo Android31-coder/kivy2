@@ -10,13 +10,14 @@ from kivy.metrics import dp, sp
 from kivy.uix.image import Image
 
 from random import randint
-import json
+import json #!!!!
 
 FPS = 60
 SHIP_SPEED = dp(5)
 BULLET_SPEED = dp(10)
 ENEMY_SPEED = dp(3)
 ENEMY_SPAWN_INTERVAL = 1
+
 
 class MainScreen(MDScreen):
     pass
@@ -32,26 +33,24 @@ class GameScreen(MDScreen):
         self.spawn_timer = 0
         self.lives = 3
         self.score = 0
-
+    
     def on_pre_enter(self):
         app = MDApp.get_running_app()
         self.ids.ship.source = app.current_skin
         self.update_ui()
-        if not hasattr(self, "clock_event"):
+        if not hasattr(self,"clock_event"):
             self.clock_event = Clock.schedule_interval(self.update, 1/FPS)
-        self.paused = False
-        self.restart_game()
+            self.paused = False
+            self.restart_game()
 
     def on_pre_leave(self):
         if hasattr(self, "clock_event"):
-            self.clock_event.cencel()
             del self.clock_event
         self.paused = True
-
     def update_ui(self):
-        self.ids.lives_label.text = " ❤ " * self.lives
+        self.ids.lives_label.text = f"Життя: {self.lives}"
         self.ids.score_label.text = f"Збито: {self.score}"
-
+    
     def game_over(self):
         self.paused = True
         self.ids.overlay.opacity = 1
@@ -61,14 +60,13 @@ class GameScreen(MDScreen):
             app.high_score = self.score
             app.save_data()
         self.ids.final_high_score.text = f"Рекорд: {app.high_score}"
-
+    
     def restart_game(self):
         self.lives = 3
         self.score = 0
         self.paused = False
         self.ids.overlay.opacity = 0
         self.spawn_timer = 0
-        
         for b in self.bullets[:]:
             self.ids.front.remove_widget(b)
         self.bullets.clear()
@@ -77,6 +75,9 @@ class GameScreen(MDScreen):
         self.enemies.clear()
         self.ids.ship.center_x = self.center_x
         self.update_ui()
+
+
+
     
     def make_pause(self):
         self.paused = not self.paused
@@ -95,11 +96,11 @@ class GameScreen(MDScreen):
                     self.eventkeys[key] = False
         for bullet in self.bullets:
             bullet.pos[1] += BULLET_SPEED
-
         for bullet in self.bullets[:]:
             if bullet.pos[1] > self.height:
                 self.bullets.remove(bullet)
                 self.ids.front.remove_widget(bullet)
+
         
         self.spawn_timer += dt
         if self.spawn_timer >= ENEMY_SPAWN_INTERVAL:
@@ -123,7 +124,7 @@ class GameScreen(MDScreen):
                 self.enemies.remove(enemy)
                 self.ids.front.remove_widget(enemy)
             
-            if enemy.colide_widget(self.ids.ship):
+            if enemy.collide_widget(self.ids.ship):
                 damage = getattr(enemy, "damage", 1)
                 self.lives -= damage
                 self.update_ui()
@@ -132,8 +133,6 @@ class GameScreen(MDScreen):
                 if self.lives <= 0:
                     self.game_over()
 
-class SettingsScreen(MDScreen):
-    pass
 
     def pressKey(self, key):
         self.eventkeys[key] = True
@@ -143,16 +142,17 @@ class SettingsScreen(MDScreen):
     
     def moveLeft(self):
         new_x = self.ids.ship.pos[0] - SHIP_SPEED
-        if new_x <0:
-            new_x = 0   
+        if new_x < 0:
+            new_x = 0
         self.ids.ship.pos[0] = new_x
-    
+            
     def moveRight(self):
-        new_x = self.ids.ship.pos[0] + SHIP_SPEED
+        new_x = self.ids.ship.pos[0] + SHIP_SPEED  
         if new_x + self.ids.ship.width > self.width:
             new_x = self.width - self.ids.ship.width
-        self.ids.ship.pos[0] = new_x 
-    
+        self.ids.ship.pos[0] = new_x
+        
+
     def shot(self):
         shot = Shot(pos = (self.ids.ship.center_x, self.ids.ship.top))
         self.bullets.append(shot)
@@ -172,14 +172,13 @@ class SettingsScreen(MDScreen):
         else:
             enemy.source = "assets/images/enemy.png"
             enemy.damage = -1
-
         self.enemies.append(enemy)
         self.ids.front.add_widget(enemy)
-    
-    
 
-                
 
+class SettingsScreen(MDScreen):
+    pass
+    
 class Shot(MDWidget):
     pass
 
@@ -193,15 +192,23 @@ class ShooterApp(MDApp):
         self.theme_cls.primary_palette = "Orange"
 
         self.high_score = 0
-        self.current_skin = "assets/images/rocket.png"
+        self.current_skin = r"C:\Users\-Admin-\Documents\GitHub\kivy2\assets\images\rocket1.png"
 
         try:
             with open("sett.json", "r") as file:
                 data = json.load(file)
                 self.high_score = data.get("high_score", 0)
-                self.current_skin = data.get("current_skin", "assets/images/rocket.png")
+                self.current_skin = data.get("current_skin", r"C:\Users\-Admin-\Documents\GitHub\kivy2\assets\images\rocket1.png")
         except Exception:
-            self.save_data()
+                self.save_data()
+                
+                """
+                {
+                    "high_score": 0,
+                    "current_skin": "path"
+                }
+                """
+
 
         self.sm = MDScreenManager()
         
@@ -209,20 +216,25 @@ class ShooterApp(MDApp):
         self.sm.add_widget(GameScreen(name = "game"))
         self.sm.add_widget(SettingsScreen(name = "sett"))
 
+        self.sm.get_screen("main").ids.record_label.text = f"RECORD: {self.high_score}"
+
         return self.sm
-    def seve_data(self):
+    
+    def save_data(self):
         data = {
             "high_score": self.high_score,
             "current_skin": self.current_skin
         }
         with open("sett.json", "w") as file:
-            json.dump(data, file)
-
+            json.dump(data, file) #!!!!!!!!!!!!!!!!!!!!!!! DUMP
+    
     def set_skin(self, skin):
         self.current_skin = skin
-        self.seve_data()
+        self.save_data()
 
-if platform != "android" or platform != "ios":
+
+
+if platform not in ("android", "ios"):
     Window.size = (500, 600)
 
     Window.top = 100

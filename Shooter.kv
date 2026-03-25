@@ -12,7 +12,7 @@
             icon: 'cog'
             pos_hint: {"right": 1, "top": 1}
             icon_size: '50dp'
-            on_press: root.meneger.current = 'sett'
+            on_press: root.manager.current = "sett"
 
         MDLabel:
             text: "SHOOTER"
@@ -21,12 +21,12 @@
 
         MDLabel:
             id: record_label
-            text: 'RECORD: 0'
+            text: "RECORD: 0"
             halign: 'center'
-            font_size: '30sp'
+            font_size:"30sp"
 
         Image:
-            source: 'assets/images/rocket.png'
+            source: 'assets/images/rocket1.png'
             size_hint_y: 0.7
             allow_stretch: True
         MDRectangleFlatButton:
@@ -36,7 +36,7 @@
             on_press: root.manager.current = "game"
 
 <Ship@Image>:
-    source: 'assets/images/rocket.png'
+    source: 'assets/images/rocket1.png'
     size_hint: (None, None)
     size: dp(100), dp(250)
 
@@ -78,45 +78,57 @@
                 pos_hint: {"top": 1, "right": 1}
                 icon_size: '50dp'
                 on_press: root.make_pause()
-
             MDLabel:
                 id: lives_label
-                text: '❤❤❤'
-                pos_hint: {'left': 1, 'bottom': 0.70}
-                font_size: '30sp'
+                text: "Життя: 3"
+                pos_hint: {"x": 0.02, "top": 0.80}
+                size_hint: None, None
+                size: self.texture_size
+                text_size: None, None
+                halign: 'left'
+                font_size: "20sp"
 
             MDLabel:
                 id: score_label
-                text: 'Збито: 0'
-                pos_hint: {'right': 1, 'bottom': 0.70}
-                font_size: '30sp'
+                text: "Збито: 0"
+                pos_hint: {"right": 0.98, "top": 0.80}
+                size_hint: None, None
+                size: self.texture_size
+                text_size: None, None
+                halign: 'right'
+                font_size: "20sp"
 
         FloatLayout:
             id: overlay
             opacity: 0
+            canvas:
+                Color:
+                    rgba: 0, 0, 0, 0.5
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
             MDBoxLayout:
                 orientation: 'vertical'
-                size_hint: 0.8, 0.6
-                pos_hint: {'senter_x': 0.5, 'senter_y': 0.5}
-                md_bg_color: 0,0,0, 85
-                padding: dp(30)
+                size_hint: 0.8 , 0.6
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                padding: dp(33)
                 spacing: dp(20)
                 MDLabel:
                     id: final_score
-                    text: 'Збито ворогів: 0'
+                    text: "Збито  ворогів: 0"
                     halign: 'center'
-                    font_name: '35sp'
+                    font_size: "35sp"
                 MDLabel:
-                    id: fina_high_score
+                    id: final_high_score
                     text: 'Рекорд: 0'
                     halign: 'center'
-                    font_name: '30sp'
+                    font_size: '30sp'
                 MDRectangleFlatButton:
                     text: 'RESTART'
-                    font_size: '30sp'
+                    font_size: "30sp"
                     on_press: root.restart_game()
-                    pos_hint: {'center_x': 0.5}
-            
+                    pos_hint: {"center_x": 0.5}
+
 
                 
 
@@ -126,13 +138,13 @@
     md_bg_color: app.theme_cls.primary_color
                     
 <Enemy@Image>:
-    source: "assets/images/enemy.png"
+    source: "enemy.png"
     size_hint: None, None
     size: dp(50), dp(50)
 
 <SettingsScreen>:
     FitImage:
-        source: "back1.jpg"
+        source: "assets/images/back1.jpg"
     MDBoxLayout:
         orientation: 'vertical'
         padding: '50dp'
@@ -147,16 +159,13 @@
             font_size: '25sp'
         MDRectangleFlatButton:
             text: "Скін 1 (стандарт)"
-            on_press: app.set_skin("rocket.png")
+            on_press: app.set_skin("assets/images/rocket1.png")
         MDRectangleFlatButton:
             text: "Скін 2"
-            on_press: app.set_skin("rocket1.png")
+            on_press: app.set_skin("assets/images/rocket1.png")
         MDRectangleFlatButton:
             text: "Скін 3"
             on_press: app.set_skin("rocket2.png")
         MDRectangleFlatButton:
             text: "Повернутися в меню"
             on_press: root.manager.current = "main"
-
-        
-
